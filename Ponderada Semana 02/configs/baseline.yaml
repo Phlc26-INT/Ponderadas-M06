@@ -1,0 +1,110 @@
+dataset:
+  path: "src/B2W-Reviews01.csv"
+  text_col: "review_text"
+  rating_col: "overall_rating"
+  label:
+    pos_threshold: 4
+    neg_threshold: 2
+    drop_neutral: true
+
+split:
+  train_size: 0.7
+  val_size: 0.15
+  test_size: 0.15
+  random_state: 42
+
+experiments:
+  - label: "tfidf_logreg"
+    prep:
+      lowercase: true
+      remove_urls: true
+      normalize_emojis: "demojize"
+      remove_punctuation: true
+      handle_negations: true
+      negation_window: 3
+      remove_stopwords: "keep_negations"
+      normalization: "stemming"
+    vec:
+      strategy: "tfidf"
+      sublinear_tf: true
+      ngram_range: [1, 2]
+      max_features: 20000
+      norm: "l2"
+    clf:
+      model: "logreg"
+      mode: "grid"
+      search_on: "validation"
+      param_grid:
+        C: [0.5, 1.0, 2.0]
+        class_weight: [null, "balanced"]
+
+  - label: "bow_nb"
+    prep:
+      lowercase: true
+      remove_urls: true
+      normalize_emojis: "demojize"
+      remove_punctuation: true
+      handle_negations: true
+      negation_window: 3
+      remove_stopwords: "keep_negations"
+      normalization: "stemming"
+    vec:
+      strategy: "bow"
+      binary: true
+      max_features: 20000
+    clf:
+      model: "multinomial_nb"
+      mode: "grid"
+      search_on: "validation"
+      param_grid:
+        alpha: [0.5, 1.0, 2.0]
+
+  - label: "tfidf_svd_svc"
+    prep:
+      lowercase: true
+      remove_urls: true
+      normalize_emojis: "demojize"
+      remove_punctuation: true
+      handle_negations: true
+      negation_window: 3
+      remove_stopwords: "keep_negations"
+      normalization: "stemming"
+    vec:
+      strategy: "tfidf_svd"
+      sublinear_tf: true
+      ngram_range: [1, 1]
+      max_features: 30000
+      norm: "l2"
+      svd_components: 100
+    clf:
+      model: "svc"
+      mode: "grid"
+      search_on: "validation"
+      param_grid:
+        C: [0.5, 1.0, 2.0]
+        class_weight: [null, "balanced"]
+
+  - label: "w2v_logreg"
+    prep:
+      lowercase: true
+      remove_urls: true
+      normalize_emojis: "demojize"
+      remove_punctuation: true
+      handle_negations: true
+      negation_window: 3
+      remove_stopwords: "keep_negations"
+      normalization: "stemming"
+    vec:
+      strategy: "w2v"
+      train_on_corpus: true
+      w2v_dim: 100
+      w2v_window: 5
+      w2v_min_count: 2
+      w2v_sg: 1
+      w2v_epochs: 10
+    clf:
+      model: "logreg"
+      mode: "manual"
+      params:
+        C: 1.0
+        max_iter: 2000

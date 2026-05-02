@@ -1,0 +1,43 @@
+{
+  "label": "tfidf_logreg",
+  "prep": {
+    "lowercase": true,
+    "remove_urls": true,
+    "normalize_emojis": "demojize",
+    "remove_punctuation": true,
+    "handle_negations": true,
+    "negation_window": 3,
+    "remove_stopwords": "keep_negations",
+    "normalization": "stemming"
+  },
+  "vec": {
+    "strategy": "tfidf",
+    "sublinear_tf": true,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 20000,
+    "norm": "l2"
+  },
+  "clf": {
+    "model": "logreg",
+    "mode": "manual",
+    "search_on": "validation",
+    "param_grid": {
+      "C": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "class_weight": [
+        null,
+        "balanced"
+      ]
+    },
+    "params": {
+      "C": 2.0,
+      "class_weight": null
+    }
+  }
+}
